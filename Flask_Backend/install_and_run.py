@@ -2,10 +2,47 @@ import platform
 import subprocess
 import os
 import venv
+import sqlite3
 
 VENV_NAME = ".venv"
 REQUIREMENTS_FILE = "requirements.txt"
 SCRIPT_TO_RUN = "app.py"
+IMAGE_FOLDER = "OUTPUT_IMAGES"
+DB_NAME = "RetroBrainScanDB.db"
+
+
+# -------------------------------
+# Database Utilities
+# -------------------------------
+def init_database(db_path=DB_NAME):
+    """Initialize SQLite3 database with ImageData table"""
+    print("\n=========== Initializing Database ===========")
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Create ImageData table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ImageData (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                filename TEXT NOT NULL,
+                upload_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                image_data TEXT NOT NULL,
+                metadata TEXT
+            )
+        ''')
+        
+        conn.commit()
+        print(f"> Database '{db_path}' initialized successfully.")
+        print("> ImageData table created or already exists.")
+        conn.close()
+        
+    except sqlite3.Error as e:
+        print(f"ERROR: Database initialization failed - {e}")
+        return False
+    
+    return True
 
 
 # -------------------------------
@@ -56,6 +93,14 @@ def install_requirements(venv_dir=VENV_NAME):
     print("\n> Requirements installed successfully.")
 
 
+# --- Function to create a folder if it does not exist ---
+def createFolderIfNotExists(folder_path=IMAGE_FOLDER):
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+        print(f"> Folder '{folder_path}' created successfully.")
+    else:
+        print(f"> Folder '{folder_path}' already exists.")
+
 # -------------------------------
 # Run the app.py file
 # -------------------------------
@@ -70,6 +115,11 @@ def run_app(venv_dir=VENV_NAME):
 # Main
 # -------------------------------
 if __name__ == "__main__":
+
+    createFolderIfNotExists()
+
+    # Initialize database
+    init_database(DB_NAME)
 
     # Create venv
     if not os.path.exists(VENV_NAME):
