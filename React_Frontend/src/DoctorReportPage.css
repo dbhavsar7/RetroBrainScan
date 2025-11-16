@@ -1,0 +1,370 @@
+.doctor-report-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 30px 20px;
+}
+
+.report-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Header */
+.report-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-content h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.report-id {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.header-actions .btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn.btn-primary {
+  background: white;
+  color: #667eea;
+}
+
+.btn.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+}
+
+.btn.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.btn.btn-outline {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  padding: 10px 20px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn.btn-outline:hover {
+  background: #667eea;
+  color: white;
+}
+
+/* Report Sections */
+.report-section {
+  padding: 30px 40px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.report-section:last-of-type {
+  border-bottom: none;
+}
+
+.report-section h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-section h2::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #667eea;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item .value {
+  color: #333;
+  font-size: 1rem;
+  padding: 8px 12px;
+  background-color: #f8f9ff;
+  border-radius: 6px;
+  border-left: 3px solid #667eea;
+}
+
+/* Patient Info Section */
+.patient-info {
+  background-color: #f8f9ff;
+}
+
+/* Findings */
+.findings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.finding-card {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #fafbfc;
+  transition: all 0.3s ease;
+}
+
+.finding-card:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+}
+
+.finding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.finding-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-normal {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-mild {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-abnormal {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.status-unknown {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.finding-description {
+  color: #666;
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.confidence-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.confidence-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #667eea;
+}
+
+.confidence-meter {
+  width: 100%;
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Assessment Box */
+.assessment-box {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  padding: 25px;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+}
+
+.assessment-box p {
+  color: #333;
+  line-height: 1.8;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Recommendations */
+.recommendations-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendations-list li {
+  padding: 15px;
+  background-color: #f8f9ff;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+  color: #333;
+  line-height: 1.6;
+}
+
+.recommendations-list li::before {
+  content: "✓ ";
+  color: #667eea;
+  font-weight: 700;
+  margin-right: 10px;
+}
+
+/* Raw Data Section */
+.raw-data-section {
+  background-color: #f8f9ff;
+}
+
+.raw-data {
+  background-color: #2d2d2d;
+  color: #f8f8f2;
+  padding: 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  font-family: "Courier New", monospace;
+  margin-top: 20px;
+}
+
+/* Footer */
+.report-footer {
+  background-color: #f8f9ff;
+  padding: 20px 40px;
+  text-align: center;
+  border-top: 1px solid #e9ecef;
+}
+
+.report-footer p {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+@media (max-width: 768px) {
+  .report-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 25px;
+  }
+
+  .header-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .report-section {
+    padding: 20px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .finding-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .report-container {
+    border-radius: 8px;
+  }
+
+  .report-section h2 {
+    font-size: 1.2rem;
+  }
+
+  .raw-data {
+    font-size: 0.75rem;
+  }
+}

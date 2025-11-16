@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./UploadPage.css";
 
-export default function UploadPage() {
+export default function UploadPage({ onUploadComplete }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
@@ -62,6 +62,11 @@ export default function UploadPage() {
           setUploadedImages(response.uploaded_images || []);
           setSelectedFiles([]);
           setUploadProgress(0);
+          
+          // Trigger processing page after a short delay
+          setTimeout(() => {
+            onUploadComplete();
+          }, 1500);
         } else {
           setUploadStatus("❌ Upload failed. Please try again.");
         }
