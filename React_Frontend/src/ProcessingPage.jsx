@@ -101,11 +101,11 @@ export default function ProcessingPage({ onProcessingComplete, uploadedImages, p
           <img 
             src="/RBS_Logo_T.png" 
             alt="RetroBrainScan Logo" 
-            style={{ width: '150px', height: '150px' }}
+            style={{ width: '225px', height: '225px' }}
           />
         </div>
         <h2 className="processing-title">Analyzing Brain Scan</h2>
-        <p className="processing-subtitle">{error || "Running AI model analysis..."}</p>
+        <p className="processing-subtitle">Running AI model analysis...</p>
 
         {/* Animated loading dots */}
         <div className="loading-dots">
