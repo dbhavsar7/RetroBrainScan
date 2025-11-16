@@ -33,9 +33,28 @@ def init_database(db_path=DB_NAME):
             )
         ''')
         
+        # Create AnalysisResults table if it doesn't exist
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS AnalysisResults (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                image_id INTEGER,
+                patient_info TEXT,
+                current_risk_score REAL,
+                current_prediction TEXT,
+                future_risk_score REAL,
+                future_prediction TEXT,
+                current_regions TEXT,
+                future_regions TEXT,
+                care_plan TEXT,
+                analysis_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (image_id) REFERENCES ImageData(id)
+            )
+        ''')
+        
         conn.commit()
         print(f"> Database '{db_path}' initialized successfully.")
         print("> ImageData table created or already exists.")
+        print("> AnalysisResults table created or already exists.")
         conn.close()
         
     except sqlite3.Error as e:

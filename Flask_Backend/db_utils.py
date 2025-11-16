@@ -167,13 +167,107 @@ class DatabaseManager:
             cursor.execute('SELECT COUNT(*) FROM ImageData')
             total_images = cursor.fetchone()[0]
             
+            cursor.execute('SELECT COUNT(*) FROM AnalysisResults')
+            total_analyses = cursor.fetchone()[0]
+            
             conn.close()
             
             return {
                 "total_images": total_images,
+                "total_analyses": total_analyses,
                 "database_path": self.db_path
             }
             
         except Exception as e:
             print(f"Error getting stats: {e}")
-            return {"total_images": 0, "database_path": self.db_path}
+            return {"total_images": 0, "total_analyses": 0, "database_path": self.db_path}
+
+    def store_analysis_results(self, image_id, patient_info, analysis_data, care_plan):
+        """
+        Store analysis results and care plan in the database
+        
+        Args:
+            image_id (int): ID of the image in ImageData table
+            patient_info (dict): Patient information
+            analysis_data (dict): Analysis results (risk scores, predictions, regions)
+            care_plan (str): Generated care plan text
+        
+        Returns:
+            int: ID of the inserted analysis record, or None if failed
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                INSERT INTO AnalysisResults (
+                    image_id, patient_info, current_risk_score, current_prediction,
+                    future_risk_score, future_prediction, current_regions,
+                    future_regions, care_plan
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                image_id,
+                json.dumps(patient_info),
+                analysis_data.get('current_risk_score'),
+                analysis_data.get('current_prediction'),
+                analysis_data.get('future_risk_score'),
+                analysis_data.get('future_prediction'),
+                json.dumps(analysis_data.get('current_regions', [])),
+                json.dumps(analysis_data.get('future_regions', [])),
+                care_plan
+            ))
+            
+            analysis_id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            
+            return analysis_id
+            
+        except Exception as e:
+            print(f"Error storing analysis results: {e}")
+            return None
+
+    def get_analysis_results(self, analysis_id):
+        """
+        Retrieve analysis results by ID
+        
+        Args:
+            analysis_id (int): ID of the analysis record
+        
+        Returns:
+            dict: Analysis results and care plan, or None if not found
+        """
+        try:
+            conn = self.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''
+                SELECT id, image_id, patient_info, current_risk_score, current_prediction,
+                       future_risk_score, future_prediction, current_regions,
+                       future_regions, care_plan, analysis_timestamp
+                FROM AnalysisResults WHERE id = ?
+            ''', (analysis_id,))
+            
+            row = cursor.fetchone()
+            conn.close()
+            
+            if row:
+                return {
+                    "id": row[0],
+                    "image_id": row[1],
+                    "patient_info": json.loads(row[2]) if row[2] else {},
+                    "current_risk_score": row[3],
+                    "current_prediction": row[4],
+                    "future_risk_score": row[5],
+                    "future_prediction": row[6],
+                    "current_regions": json.loads(row[7]) if row[7] else [],
+                    "future_regions": json.loads(row[8]) if row[8] else [],
+                    "care_plan": row[9],
+                    "analysis_timestamp": row[10]
+                }
+            return None
+            
+        except Exception as e:
+            print(f"Error retrieving analysis results: {e}")
+            return None
