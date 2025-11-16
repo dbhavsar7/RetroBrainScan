@@ -1,17 +1,29 @@
 import { useState } from "react";
 import "./UploadPage.css";
+import PatientInfoForm from "./PatientInfoForm";
 
-export default function UploadPage() {
+export default function UploadPage({ onUploadComplete }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [patientInfo, setPatientInfo] = useState(null);
+  const [showForm, setShowForm] = useState(true);
 
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles(files);
     setUploadStatus("");
+  };
+
+  const handlePatientInfoSubmit = (info) => {
+    setPatientInfo(info);
+    setShowForm(false);
+  };
+
+  const handleBackToForm = () => {
+    setShowForm(true);
   };
 
   const handleDragOver = (e) => {
@@ -62,6 +74,11 @@ export default function UploadPage() {
           setUploadedImages(response.uploaded_images || []);
           setSelectedFiles([]);
           setUploadProgress(0);
+          
+          // Trigger processing page after a short delay
+          setTimeout(() => {
+            onUploadComplete(patientInfo);
+          }, 1500);
         } else {
           setUploadStatus("❌ Upload failed. Please try again.");
         }
@@ -82,11 +99,38 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="upload-page">
-      <div className="upload-container">
-        <h1 className="mb-4">
-          <span className="brain-emoji">🧠</span> Upload Brain Scan Images
-        </h1>
+    <>
+      {showForm && patientInfo === null ? (
+        <PatientInfoForm
+          onSubmit={handlePatientInfoSubmit}
+          onCancel={() => window.history.back()}
+          isLoading={false}
+        />
+      ) : (
+        <div className="upload-page">
+          <div className="upload-container">
+            <div className="upload-header">
+              <h1 className="mb-4">
+                <span className="brain-emoji">🧠</span> Upload Brain Scan Images
+              </h1>
+              {patientInfo && (
+                <div className="patient-info-summary">
+                  <p>
+                    <strong>Patient:</strong> {patientInfo.patient.name} (MRN:{" "}
+                    {patientInfo.patient.mrn})
+                  </p>
+                  <p>
+                    <strong>Doctor:</strong> {patientInfo.doctor.name}
+                  </p>
+                  <button
+                    onClick={handleBackToForm}
+                    className="btn btn-link-small"
+                  >
+                    ✎ Edit Info
+                  </button>
+                </div>
+              )}
+            </div>
 
         {/* Drag and Drop Area */}
         <div
@@ -187,7 +231,17 @@ export default function UploadPage() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+
+        {/* Demo Brain Image */}
+        <div className="demo-image-section">
+          <h3>📋 Demo Brain Scan Image</h3>
+          <div className="demo-image-container">
+            <img src="/MRI_of_Human_Brain.jpg" alt="Demo MRI Brain Scan" />
+          </div>
+        </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
