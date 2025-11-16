@@ -62,8 +62,25 @@ const DUMMY_REPORT_DATA = {
   },
 };
 
-export default function DoctorReportPage({ onBackClick }) {
+export default function DoctorReportPage({ patientInfo, onBackClick }) {
   const [showRawData, setShowRawData] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/MRI_of_Human_Brain.jpg");
+  const [imageError, setImageError] = useState(false);
+
+  // Use real patient info if provided, otherwise use dummy data
+  const reportData = patientInfo ? {
+    patient: patientInfo.patient,
+    doctor: patientInfo.doctor,
+    scanInfo: {
+      scanType: "MRI Brain",
+      scanDate: new Date().toISOString().split('T')[0],
+      scanTime: new Date().toLocaleTimeString(),
+      scanDuration: "32 minutes",
+      scannerModel: "Siemens 3.0T",
+    },
+    analysis: DUMMY_REPORT_DATA.analysis,
+    recommendations: DUMMY_REPORT_DATA.recommendations,
+  } : DUMMY_REPORT_DATA;
 
   const handleDownloadPDF = async () => {
     try {
@@ -72,7 +89,7 @@ export default function DoctorReportPage({ onBackClick }) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(DUMMY_REPORT_DATA),
+          body: JSON.stringify(reportData),
         }
       );
 
@@ -85,7 +102,7 @@ export default function DoctorReportPage({ onBackClick }) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `brain_scan_report_${DUMMY_REPORT_DATA.patient.mrn}.pdf`;
+      a.download = `brain_scan_report_${reportData.patient.mrn}.pdf`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -118,7 +135,7 @@ export default function DoctorReportPage({ onBackClick }) {
         <div className="report-header">
           <div className="header-content">
             <h1>🧠 Brain Scan Analysis Report</h1>
-            <p className="report-id">Report ID: {DUMMY_REPORT_DATA.patient.mrn}</p>
+            <p className="report-id">Report ID: {reportData.patient.mrn}</p>
           </div>
           <div className="header-actions">
             <button className="btn btn-primary" onClick={handleDownloadPDF}>
@@ -136,27 +153,27 @@ export default function DoctorReportPage({ onBackClick }) {
           <div className="info-grid">
             <div className="info-item">
               <span className="label">Name:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.name}</span>
+              <span className="value">{reportData.patient.name}</span>
             </div>
             <div className="info-item">
               <span className="label">Age:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.age}</span>
+              <span className="value">{reportData.patient.age}</span>
             </div>
             <div className="info-item">
               <span className="label">Gender:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.gender}</span>
+              <span className="value">{reportData.patient.gender}</span>
             </div>
             <div className="info-item">
               <span className="label">MRN:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.mrn}</span>
+              <span className="value">{reportData.patient.mrn}</span>
             </div>
             <div className="info-item">
               <span className="label">Date of Birth:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.dateOfBirth}</span>
+              <span className="value">{reportData.patient.dateOfBirth}</span>
             </div>
             <div className="info-item">
               <span className="label">Hospital:</span>
-              <span className="value">{DUMMY_REPORT_DATA.patient.hospital}</span>
+              <span className="value">{reportData.patient.hospital}</span>
             </div>
           </div>
         </section>
@@ -167,23 +184,23 @@ export default function DoctorReportPage({ onBackClick }) {
           <div className="info-grid">
             <div className="info-item">
               <span className="label">Scan Type:</span>
-              <span className="value">{DUMMY_REPORT_DATA.scanInfo.scanType}</span>
+              <span className="value">{reportData.scanInfo.scanType}</span>
             </div>
             <div className="info-item">
               <span className="label">Scan Date:</span>
-              <span className="value">{DUMMY_REPORT_DATA.scanInfo.scanDate}</span>
+              <span className="value">{reportData.scanInfo.scanDate}</span>
             </div>
             <div className="info-item">
               <span className="label">Scan Time:</span>
-              <span className="value">{DUMMY_REPORT_DATA.scanInfo.scanTime}</span>
+              <span className="value">{reportData.scanInfo.scanTime}</span>
             </div>
             <div className="info-item">
               <span className="label">Duration:</span>
-              <span className="value">{DUMMY_REPORT_DATA.scanInfo.scanDuration}</span>
+              <span className="value">{reportData.scanInfo.scanDuration}</span>
             </div>
             <div className="info-item">
               <span className="label">Scanner Model:</span>
-              <span className="value">{DUMMY_REPORT_DATA.scanInfo.scannerModel}</span>
+              <span className="value">{reportData.scanInfo.scannerModel}</span>
             </div>
           </div>
         </section>
@@ -192,7 +209,7 @@ export default function DoctorReportPage({ onBackClick }) {
         <section className="report-section findings">
           <h2>Analysis Findings</h2>
           <div className="findings-list">
-            {DUMMY_REPORT_DATA.analysis.findings.map((finding, index) => (
+            {reportData.analysis.findings.map((finding, index) => (
               <div key={index} className="finding-card">
                 <div className="finding-header">
                   <h3>{finding.title}</h3>
@@ -219,7 +236,7 @@ export default function DoctorReportPage({ onBackClick }) {
         <section className="report-section assessment">
           <h2>Overall Assessment</h2>
           <div className="assessment-box">
-            <p>{DUMMY_REPORT_DATA.analysis.overallAssessment}</p>
+            <p>{reportData.analysis.overallAssessment}</p>
           </div>
         </section>
 
@@ -227,7 +244,7 @@ export default function DoctorReportPage({ onBackClick }) {
         <section className="report-section recommendations">
           <h2>Clinical Recommendations</h2>
           <ul className="recommendations-list">
-            {DUMMY_REPORT_DATA.recommendations.map((rec, index) => (
+            {reportData.recommendations.map((rec, index) => (
               <li key={index}>{rec}</li>
             ))}
           </ul>
@@ -239,15 +256,15 @@ export default function DoctorReportPage({ onBackClick }) {
           <div className="info-grid">
             <div className="info-item">
               <span className="label">Radiologist:</span>
-              <span className="value">{DUMMY_REPORT_DATA.radiologist.name}</span>
+              <span className="value">{reportData.doctor.name}</span>
             </div>
             <div className="info-item">
               <span className="label">Specialty:</span>
-              <span className="value">{DUMMY_REPORT_DATA.radiologist.specialty}</span>
+              <span className="value">{reportData.doctor.specialty}</span>
             </div>
             <div className="info-item">
               <span className="label">License:</span>
-              <span className="value">{DUMMY_REPORT_DATA.radiologist.license}</span>
+              <span className="value">{reportData.doctor.license}</span>
             </div>
           </div>
         </section>
@@ -263,7 +280,7 @@ export default function DoctorReportPage({ onBackClick }) {
 
           {showRawData && (
             <pre className="raw-data">
-              {JSON.stringify(DUMMY_REPORT_DATA, null, 2)}
+              {JSON.stringify(reportData, null, 2)}
             </pre>
           )}
         </section>

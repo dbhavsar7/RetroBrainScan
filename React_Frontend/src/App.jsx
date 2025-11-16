@@ -7,9 +7,11 @@ import "./App.css";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("upload");
+  const [patientInfo, setPatientInfo] = useState(null);
 
-  const handleUploadComplete = () => {
-    // After upload, go to processing page
+  const handleUploadComplete = (info) => {
+    // After upload, store patient info and go to processing page
+    setPatientInfo(info);
     setCurrentPage("processing");
   };
 
@@ -20,6 +22,7 @@ function App() {
 
   const handleBackToUpload = () => {
     setCurrentPage("upload");
+    setPatientInfo(null);
   };
 
   return (
@@ -75,7 +78,7 @@ function App() {
         <div className={currentPage === "processing" || currentPage === "report" ? "" : "container"}>
           {currentPage === "upload" && <UploadPage onUploadComplete={handleUploadComplete} />}
           {currentPage === "processing" && <ProcessingPage onProcessingComplete={handleProcessingComplete} />}
-          {currentPage === "report" && <DoctorReportPage onBackClick={handleBackToUpload} />}
+          {currentPage === "report" && <DoctorReportPage patientInfo={patientInfo} onBackClick={handleBackToUpload} />}
           {currentPage === "test" && <MessageSender />}
         </div>
       </main>
