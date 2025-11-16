@@ -147,6 +147,23 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
           </div>
         </div>
 
+        {/* Brain Scan Image */}
+        <section className="brain-scan-image-section">
+          <h2>Brain Scan Image</h2>
+          <div className="brain-scan-image-container">
+            <img 
+              src={imageSrc} 
+              alt="Brain Scan MRI"
+              onError={() => {
+                if (!imageError) {
+                  setImageError(true);
+                  setImageSrc("http://127.0.0.1:5000/static/images/MRI_of_Human_Brain.jpg");
+                }
+              }}
+            />
+          </div>
+        </section>
+
         {/* Patient Information */}
         <section className="report-section patient-info">
           <h2>Patient Information</h2>

@@ -10,7 +10,7 @@ from io import BytesIO
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
 from reportlab.lib import colors
 from datetime import datetime
 
@@ -222,6 +222,16 @@ def generate_report():
         # Title
         elements.append(Paragraph("🧠 BRAIN SCAN ANALYSIS REPORT", title_style))
         elements.append(Spacer(1, 0.2*inch))
+        
+        # Brain Scan Image
+        try:
+            image_path = os.path.join(os.path.dirname(__file__), 'static', 'images', 'MRI_of_Human_Brain.jpg')
+            if os.path.exists(image_path):
+                img = Image(image_path, width=3.5*inch, height=3.5*inch)
+                elements.append(img)
+                elements.append(Spacer(1, 0.2*inch))
+        except Exception as e:
+            print(f"Warning: Could not load brain scan image: {e}")
         
         # Report Info
         report_info = [

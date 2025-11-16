@@ -89,6 +89,36 @@
   color: white;
 }
 
+/* Brain Scan Image Section */
+.brain-scan-image-section {
+  padding: 30px 40px;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9ff;
+  text-align: center;
+}
+
+.brain-scan-image-section h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.brain-scan-image-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.brain-scan-image-container img {
+  max-width: 100%;
+  max-height: 500px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  border: 2px solid #667eea;
+}
+
 /* Report Sections */
 .report-section {
   padding: 30px 40px;
