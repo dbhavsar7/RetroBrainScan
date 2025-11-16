@@ -1,6 +1,6 @@
 .doctor-report-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0B3555;
   padding: 30px 20px;
 }
 
@@ -15,7 +15,7 @@
 
 /* Header */
 .report-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2CA3D8 0%, #0B3555 100%);
   color: white;
   padding: 40px;
   display: flex;
@@ -54,13 +54,18 @@
 }
 
 .btn.btn-primary {
-  background: white;
-  color: #667eea;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn.btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .btn.btn-secondary {
@@ -75,8 +80,8 @@
 
 .btn.btn-outline {
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #0B3555;
+  border: 2px solid #0B3555;
   padding: 10px 20px;
   font-weight: 600;
   cursor: pointer;
@@ -85,7 +90,7 @@
 }
 
 .btn.btn-outline:hover {
-  background: #667eea;
+  background: #0B3555;
   color: white;
 }
 
@@ -115,8 +120,8 @@
   max-width: 100%;
   max-height: 500px;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-  border: 2px solid #667eea;
+  box-shadow: 0 4px 15px rgba(44, 163, 216, 0.3);
+  border: 2px solid #2CA3D8;
 }
 
 /* Report Sections */
@@ -144,7 +149,7 @@
   display: inline-block;
   width: 4px;
   height: 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0B3555;
   border-radius: 2px;
 }
 
@@ -163,7 +168,7 @@
 
 .info-item .label {
   font-weight: 600;
-  color: #667eea;
+  color: #0B3555;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -175,7 +180,7 @@
   padding: 8px 12px;
   background-color: #f8f9ff;
   border-radius: 6px;
-  border-left: 3px solid #667eea;
+  border-left: 3px solid #0B3555;
 }
 
 /* Patient Info Section */
@@ -199,8 +204,8 @@
 }
 
 .finding-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+  border-color: #0B3555;
+  box-shadow: 0 4px 15px rgba(11, 53, 85, 0.1);
 }
 
 .finding-header {
@@ -262,7 +267,7 @@
 .confidence-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #667eea;
+  color: #0B3555;
 }
 
 .confidence-meter {
@@ -275,17 +280,17 @@
 
 .confidence-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: #0B3555;
   border-radius: 3px;
   transition: width 0.5s ease;
 }
 
 /* Assessment Box */
 .assessment-box {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  background: rgba(11, 53, 85, 0.1);
   padding: 25px;
   border-radius: 10px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0B3555;
 }
 
 .assessment-box p {
@@ -309,14 +314,14 @@
   padding: 15px;
   background-color: #f8f9ff;
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0B3555;
   color: #333;
   line-height: 1.6;
 }
 
 .recommendations-list li::before {
   content: "✓ ";
-  color: #667eea;
+  color: #0B3555;
   font-weight: 700;
   margin-right: 10px;
 }

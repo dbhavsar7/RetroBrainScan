@@ -8,15 +8,18 @@ import "./App.css";
 function App() {
   const [currentPage, setCurrentPage] = useState("upload");
   const [patientInfo, setPatientInfo] = useState(null);
+  const [uploadPageKey, setUploadPageKey] = useState(0);
+  const [autoFillAndSubmit, setAutoFillAndSubmit] = useState(false);
 
-  const handleUploadComplete = (info) => {
-    // After upload, store patient info and go to processing page
-    setPatientInfo(info);
+  const handleUploadComplete = (info, uploadedImages) => {
+    // After upload, store patient info and uploaded images, go to processing page
+    setPatientInfo({...info, uploadedImages});
     setCurrentPage("processing");
   };
 
-  const handleProcessingComplete = () => {
-    // After processing (5 seconds), go to report page
+  const handleProcessingComplete = (analysisResults) => {
+    // After processing, store results and go to report page
+    setPatientInfo(prev => ({...prev, analysisResults}));
     setCurrentPage("report");
   };
 
@@ -29,7 +32,7 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       {/* Navigation - Hidden on processing and report pages */}
       {currentPage !== "processing" && currentPage !== "report" && (
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+        <nav className="navbar navbar-expand-lg bg-white shadow">
           <div className="container-fluid">
             <a 
               className="navbar-brand fw-bold" 
@@ -37,9 +40,16 @@ function App() {
               onClick={(e) => {
                 e.preventDefault();
                 setCurrentPage("upload");
+                setPatientInfo(null);
+                setAutoFillAndSubmit(false);
+                setUploadPageKey(prev => prev + 1); // Force remount to reset UploadPage state
               }}
             >
-              🧠 RetroBrainScan
+              <img 
+                src="/RBS_Logo_T.png" 
+                alt="RetroBrainScan" 
+                className="navbar-logo"
+              />
             </a>
             <button 
               className="navbar-toggler" 
@@ -54,19 +64,22 @@ function App() {
                 <li className="nav-item">
                   <button 
                     className={`nav-link btn btn-link ${currentPage === "upload" ? "active" : ""}`}
-                    onClick={() => setCurrentPage("upload")}
+                    onClick={() => {
+                      setCurrentPage("upload");
+                      setAutoFillAndSubmit(true);
+                    }}
                   >
                     Upload Images
                   </button>
                 </li>
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <button 
                     className={`nav-link btn btn-link ${currentPage === "test" ? "active" : ""}`}
                     onClick={() => setCurrentPage("test")}
                   >
                     Test API
                   </button>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>
@@ -75,18 +88,22 @@ function App() {
 
       {/* Main Content */}
       <main className="flex-grow-1 py-4">
-        <div className={currentPage === "processing" || currentPage === "report" ? "" : "container"}>
-          {currentPage === "upload" && <UploadPage onUploadComplete={handleUploadComplete} />}
-          {currentPage === "processing" && <ProcessingPage onProcessingComplete={handleProcessingComplete} />}
+        <div className={currentPage === "processing" || currentPage === "report" ? "" : "container-fluid"}>
+          {currentPage === "upload" && <UploadPage key={uploadPageKey} onUploadComplete={handleUploadComplete} autoFillAndSubmit={autoFillAndSubmit} onAutoFillComplete={() => setAutoFillAndSubmit(false)} />}
+          {currentPage === "processing" && <ProcessingPage onProcessingComplete={handleProcessingComplete} uploadedImages={patientInfo?.uploadedImages} patientInfo={patientInfo} />}
           {currentPage === "report" && <DoctorReportPage patientInfo={patientInfo} onBackClick={handleBackToUpload} />}
-          {currentPage === "test" && <MessageSender />}
+          {/* {currentPage === "test" && <MessageSender />} */}
         </div>
       </main>
 
       {/* Footer - Hidden on processing and report pages */}
       {currentPage !== "processing" && currentPage !== "report" && (
         <footer className="bg-dark text-white text-center py-3 mt-auto">
-          <p className="mb-0">&copy; 2025 RetroBrainScan. All rights reserved.</p>
+          <p className="mb-0">
+            <a href="https://hackrpi.com/" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">HACKRPI 2025</a>
+            {" X "}
+            <a href="https://github.com/dbhavsar7/RetroBrainScan#" target="_blank" rel="noopener noreferrer" className="text-white text-decoration-none">RetroBrainScan</a>
+          </p>
         </footer>
       )}
     </div>

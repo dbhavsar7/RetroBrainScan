@@ -1,6 +1,6 @@
 .patient-info-form-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0B3555;
   padding: 40px 20px;
   display: flex;
   align-items: center;
@@ -44,16 +44,57 @@
   background-color: #f8f9ff;
 }
 
+.section-title-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #0B3555;
+}
+
 .section-title {
   font-size: 1.2rem;
-  color: #667eea;
-  margin-bottom: 20px;
+  color: #0B3555;
+  margin-bottom: 0;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #667eea;
+}
+
+.autofill-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: #0B3555;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.autofill-btn:hover {
+  background-color: #2CA3D8;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(11, 53, 85, 0.3);
+}
+
+.autofill-btn:active {
+  transform: translateY(0);
+}
+
+.autofill-icon {
+  font-size: 1rem;
+}
+
+.autofill-text {
+  font-size: 0.85rem;
 }
 
 .form-group {
@@ -84,8 +125,8 @@
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #0B3555;
+  box-shadow: 0 0 0 3px rgba(11, 53, 85, 0.1);
 }
 
 .form-group input.error,
@@ -131,13 +172,16 @@
 }
 
 .btn.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: transparent !important;
+  color: #0B3555 !important;
+  border: none !important;
 }
 
 .btn.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(11, 53, 85, 0.4);
+  background: #0B3555 !important;
+  color: #2CA3D8 !important;
 }
 
 .btn.btn-primary:disabled {
@@ -177,6 +221,16 @@
 
   .form-section {
     padding: 15px;
+  }
+
+  .section-title-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .autofill-btn {
+    align-self: flex-end;
   }
 
   .form-row {

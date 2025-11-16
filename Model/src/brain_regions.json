@@ -1,0 +1,30 @@
+{
+    "regions": [
+      "Frontal Lobe",
+      "Superior Frontal Gyrus",
+      "Middle Frontal Gyrus",
+      "Parietal Lobe",
+      "Precuneus",
+      "Posterior Cingulate Cortex",
+      "Temporal Lobe",
+      "Hippocampus",
+      "Amygdala",
+      "Occipital Lobe",
+      "Thalamus",
+      "Basal Ganglia"
+    ],
+    "spatial_map": {
+      "top-left": ["Superior Frontal Gyrus", "Frontal Lobe"],
+      "top-center": ["Superior Frontal Gyrus"],
+      "top-right": ["Superior Frontal Gyrus", "Frontal Lobe"],
+  
+      "mid-left": ["Temporal Lobe", "Parietal Lobe"],
+      "mid-center": ["Precuneus", "Posterior Cingulate Cortex"],
+      "mid-right": ["Temporal Lobe", "Parietal Lobe"],
+  
+      "bottom-left": ["Hippocampus", "Amygdala"],
+      "bottom-center": ["Thalamus", "Basal Ganglia"],
+      "bottom-right": ["Hippocampus", "Amygdala"]
+    }
+  }
+

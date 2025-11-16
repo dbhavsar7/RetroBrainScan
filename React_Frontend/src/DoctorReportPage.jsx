@@ -67,6 +67,9 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
   const [imageSrc, setImageSrc] = useState("/MRI_of_Human_Brain.jpg");
   const [imageError, setImageError] = useState(false);
 
+  // Get analysis results from patientInfo
+  const analysisResults = patientInfo?.analysisResults;
+
   // Use real patient info if provided, otherwise use dummy data
   const reportData = patientInfo ? {
     patient: patientInfo.patient,
@@ -78,20 +81,49 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
       scanDuration: "32 minutes",
       scannerModel: "Siemens 3.0T",
     },
-    analysis: DUMMY_REPORT_DATA.analysis,
-    recommendations: DUMMY_REPORT_DATA.recommendations,
+    analysis: analysisResults ? {
+      findings: [
+        {
+          title: "Current Brain Scan Analysis",
+          status: analysisResults.current_prediction,
+          description: `AI analysis indicates: ${analysisResults.current_prediction}. Risk score: ${(analysisResults.current_risk_score * 100).toFixed(1)}%`,
+          confidence: Math.round(analysisResults.current_risk_score * 100),
+        },
+        {
+          title: "Future Progression Prediction",
+          status: analysisResults.future_prediction,
+          description: `Predicted future state: ${analysisResults.future_prediction}. Projected risk score: ${(analysisResults.future_risk_score * 100).toFixed(1)}%`,
+          confidence: Math.round(analysisResults.future_risk_score * 100),
+        },
+      ],
+      overallAssessment: `Current analysis shows ${analysisResults.current_prediction} with a risk score of ${(analysisResults.current_risk_score * 100).toFixed(1)}%. Future progression modeling predicts ${analysisResults.future_prediction} with a projected risk score of ${(analysisResults.future_risk_score * 100).toFixed(1)}%. Clinical correlation recommended.`,
+    } : DUMMY_REPORT_DATA.analysis,
+    recommendations: analysisResults ? [
+      "Review current heatmap visualization for detailed analysis",
+      "Compare current and future MRI predictions",
+      "Schedule follow-up imaging based on progression model",
+      "Consider clinical consultation for risk assessment",
+    ] : DUMMY_REPORT_DATA.recommendations,
+    analysisResults: analysisResults, // Store full results for image display
   } : DUMMY_REPORT_DATA;
 
-  const handleDownloadPDF = async () => {
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:5000/generate-report",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(reportData),
-        }
-      );
+    const handleDownloadPDF = async () => {
+      try {
+        // Include analysis results and care plan in PDF data
+        const pdfData = {
+          ...reportData,
+          analysisResults: analysisResults,
+          care_plan: analysisResults?.care_plan || ''
+        };
+        
+        const response = await fetch(
+          "http://127.0.0.1:5000/generate-report",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(pdfData),
+          }
+        );
 
       if (!response.ok) {
         alert("Failed to generate PDF");
@@ -139,7 +171,7 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
           </div>
           <div className="header-actions">
             <button className="btn btn-primary" onClick={handleDownloadPDF}>
-              📥 Download PDF
+              <span>📥</span> <span>Download PDF</span>
             </button>
             <button className="btn btn-secondary" onClick={onBackClick}>
               ← Back to Upload
@@ -147,21 +179,73 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
           </div>
         </div>
 
-        {/* Brain Scan Image */}
+        {/* Brain Scan Images */}
         <section className="brain-scan-image-section">
-          <h2>Brain Scan Image</h2>
-          <div className="brain-scan-image-container">
-            <img 
-              src={imageSrc} 
-              alt="Brain Scan MRI"
-              onError={() => {
-                if (!imageError) {
-                  setImageError(true);
-                  setImageSrc("http://127.0.0.1:5000/static/images/MRI_of_Human_Brain.jpg");
-                }
-              }}
-            />
-          </div>
+          <h2>Brain Scan Analysis</h2>
+          {analysisResults ? (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', marginTop: '20px' }}>
+              {/* Original Image */}
+              <div>
+                <h3>Original Scan</h3>
+                <div className="brain-scan-image-container">
+                  <img 
+                    src={`data:image/jpeg;base64,${analysisResults.original_image}`}
+                    alt="Original Brain Scan"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </div>
+              </div>
+              
+              {/* Current Heatmap */}
+              <div>
+                <h3>Current Heatmap (Grad-CAM)</h3>
+                <div className="brain-scan-image-container">
+                  <img 
+                    src={`data:image/png;base64,${analysisResults.current_heatmap}`}
+                    alt="Current Heatmap"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </div>
+              </div>
+              
+              {/* Future MRI */}
+              <div>
+                <h3>Predicted Future MRI</h3>
+                <div className="brain-scan-image-container">
+                  <img 
+                    src={`data:image/png;base64,${analysisResults.future_mri}`}
+                    alt="Future MRI"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </div>
+              </div>
+              
+              {/* Future Heatmap */}
+              <div>
+                <h3>Future Heatmap</h3>
+                <div className="brain-scan-image-container">
+                  <img 
+                    src={`data:image/png;base64,${analysisResults.future_heatmap}`}
+                    alt="Future Heatmap"
+                    style={{ maxWidth: '100%', height: 'auto' }}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="brain-scan-image-container">
+              <img 
+                src={imageSrc} 
+                alt="Brain Scan MRI"
+                onError={() => {
+                  if (!imageError) {
+                    setImageError(true);
+                    setImageSrc("http://127.0.0.1:5000/static/images/MRI_of_Human_Brain.jpg");
+                  }
+                }}
+              />
+            </div>
+          )}
         </section>
 
         {/* Patient Information */}
@@ -266,6 +350,23 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
             ))}
           </ul>
         </section>
+
+        {/* Care Plan Section */}
+        {analysisResults?.care_plan && (
+          <section className="report-section care-plan">
+            <h2>Personalized Patient Care Plan</h2>
+            <div className="care-plan-content" style={{ 
+              whiteSpace: 'pre-wrap', 
+              lineHeight: '1.6',
+              padding: '20px',
+              backgroundColor: '#f8f9fa',
+              borderRadius: '8px',
+              border: '1px solid #e0e0e0'
+            }}>
+              {analysisResults.care_plan}
+            </div>
+          </section>
+        )}
 
         {/* Radiologist Information */}
         <section className="report-section radiologist-info">

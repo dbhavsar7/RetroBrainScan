@@ -7,7 +7,7 @@
 }
 
 .upload-container {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -16,8 +16,8 @@
 }
 
 .patient-info-summary {
-  background-color: #e8e9ff;
-  border-left: 4px solid #667eea;
+  background-color: rgba(11, 53, 85, 0.1);
+  border-left: 4px solid #0B3555;
   padding: 15px 20px;
   border-radius: 8px;
   margin-top: 15px;
@@ -30,14 +30,14 @@
 }
 
 .patient-info-summary strong {
-  color: #667eea;
+  color: #0B3555;
   font-weight: 600;
 }
 
 .btn.btn-link-small {
   background: none;
   border: none;
-  color: #667eea;
+  color: #0B3555;
   cursor: pointer;
   padding: 5px 10px;
   font-size: 0.85rem;
@@ -48,7 +48,7 @@
 }
 
 .btn.btn-link-small:hover {
-  color: #764ba2;
+  color: #0B3555;
 }
 
 .brain-emoji {
@@ -57,25 +57,28 @@
 }
 
 .upload-area {
-  border: 3px dashed #667eea;
+  border: 3px dashed #0B3555;
   border-radius: 12px;
-  padding: 60px 30px;
+  padding: 40px 30px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background-color: #f8f9ff;
+  background-color: rgba(11, 53, 85, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .upload-area:hover {
-  border-color: #764ba2;
-  background-color: #f0f1ff;
+  border-color: #0B3555;
+  background-color: rgba(11, 53, 85, 0.1);
   transform: translateY(-2px);
 }
 
 .upload-area.drag-over {
-  border-color: #764ba2;
-  background-color: #e8e9ff;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+  border-color: #0B3555;
+  background-color: rgba(11, 53, 85, 0.15);
+  box-shadow: 0 0 20px rgba(11, 53, 85, 0.3);
 }
 
 .upload-icon {
@@ -91,23 +94,76 @@
 
 .upload-button {
   font-size: 1rem;
-  padding: 12px 30px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 8px 20px;
+  background: #0B3555;
   border: none;
   color: white;
   font-weight: 600;
+  display: inline-block;
+  cursor: pointer;
+  margin-top: 0;
 }
 
 .upload-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 20px rgba(11, 53, 85, 0.4);
+  background: #0a2d47;
+}
+
+.btn.btn-success {
+  background: #0B3555 !important;
+  color: #2CA3D8 !important;
+  border: none !important;
+  padding: 10px 25px;
+  font-weight: 600;
+}
+
+.btn.btn-success:hover {
+  background: #0a2d47 !important;
+  color: #2CA3D8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 20px rgba(11, 53, 85, 0.4);
+}
+
+.btn.btn-success:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .selected-files {
   background-color: #f8f9ff;
   padding: 20px;
   border-radius: 10px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0B3555;
+  position: relative;
+}
+
+.selected-files-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.selected-files-header h5 {
+  margin: 0;
+}
+
+.btn-clear-files {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.btn-clear-files:hover {
+  opacity: 1;
+  background-color: rgba(11, 53, 85, 0.1);
+  transform: scale(1.1);
 }
 
 .file-list {
@@ -146,6 +202,7 @@
 .progress {
   border-radius: 8px;
   background-color: #e9ecef;
+  overflow: hidden;
 }
 
 .progress-bar {
@@ -154,14 +211,18 @@
   align-items: center;
   justify-content: center;
   color: white;
-  transition: width 0.3s ease;
+  transition: width 0.4s ease;
+}
+
+.progress-bar-upload {
+  background: linear-gradient(90deg, #2CA3D8 0%, #0B3555 100%);
 }
 
 .uploaded-images {
   background-color: #f8f9ff;
   padding: 30px;
   border-radius: 12px;
-  border-left: 4px solid #764ba2;
+  border-left: 4px solid #0B3555;
 }
 
 .images-grid {
@@ -181,7 +242,7 @@
 
 .image-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 20px rgba(11, 53, 85, 0.3);
 }
 
 .image-card img {
@@ -204,7 +265,7 @@
   background-color: #f8f9ff;
   padding: 30px;
   border-radius: 12px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #0B3555;
   margin-top: 30px;
   text-align: center;
 }

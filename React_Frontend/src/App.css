@@ -40,3 +40,83 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Navbar Styles */
+.navbar.bg-white {
+  background-color: white !important;
+}
+
+.navbar-brand {
+  color: #0B3555 !important;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0;
+  overflow: visible;
+  height: 70px;
+  max-width: none;
+}
+
+.navbar-brand:hover {
+  color: #0B3555 !important;
+}
+
+.navbar-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: -25px 0;
+  transform: scale(1.5);
+  transform-origin: left center;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+.nav-link {
+  color: #0B3555 !important;
+}
+
+.nav-link:hover {
+  color: #0B3555 !important;
+  opacity: 0.8;
+}
+
+.nav-link.active {
+  color: #0B3555 !important;
+  font-weight: 600;
+}
+
+.nav-link.btn-link {
+  color: #0B3555 !important;
+  text-decoration: none;
+  border: none;
+  background: none;
+  padding: 0.5rem 1rem;
+}
+
+.nav-link.btn-link:hover {
+  color: #2CA3D8 !important;
+  background-color: #0B3555 !important;
+  opacity: 1 !important;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.navbar-toggler {
+  border-color: #0B3555;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2811, 53, 85, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Footer link styles */
+footer a {
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #2CA3D8 !important;
+  text-decoration: underline !important;
+}

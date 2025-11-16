@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./UploadPage.css";
 import PatientInfoForm from "./PatientInfoForm";
 
-export default function UploadPage({ onUploadComplete }) {
+export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAutoFillComplete }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState("");
@@ -51,6 +51,18 @@ export default function UploadPage({ onUploadComplete }) {
 
     setIsUploading(true);
     setUploadProgress(0);
+    setUploadStatus("Uploading images...");
+
+    // Simulate progress animation to 90% over 2.5 seconds
+    let simulatedProgress = 0;
+    const progressInterval = setInterval(() => {
+      simulatedProgress += 1.8; // Increment by 1.8% every ~45ms to reach 90% in ~2.5s
+      if (simulatedProgress >= 90) {
+        simulatedProgress = 90;
+        clearInterval(progressInterval);
+      }
+      setUploadProgress(simulatedProgress);
+    }, 45);
 
     try {
       const formData = new FormData();
@@ -63,31 +75,43 @@ export default function UploadPage({ onUploadComplete }) {
       xhr.upload.addEventListener("progress", (e) => {
         if (e.lengthComputable) {
           const percentComplete = (e.loaded / e.total) * 100;
-          setUploadProgress(percentComplete);
+          // Use actual upload progress if it's ahead of simulated progress
+          if (percentComplete > simulatedProgress && percentComplete < 90) {
+            setUploadProgress(percentComplete);
+            simulatedProgress = percentComplete;
+          }
         }
       });
 
       xhr.addEventListener("load", () => {
+        clearInterval(progressInterval);
+        
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
+          
+          // Complete the progress bar to 100%
+          setUploadProgress(100);
           setUploadStatus("✅ Images uploaded successfully!");
           setUploadedImages(response.uploaded_images || []);
-          setSelectedFiles([]);
-          setUploadProgress(0);
           
-          // Trigger processing page after a short delay
+          // Wait a moment to show 100%, then move to processing
           setTimeout(() => {
-            onUploadComplete(patientInfo);
-          }, 1500);
+            setSelectedFiles([]);
+            setUploadProgress(0);
+            onUploadComplete(patientInfo, response.uploaded_images || []);
+          }, 800);
         } else {
           setUploadStatus("❌ Upload failed. Please try again.");
+          setIsUploading(false);
+          setUploadProgress(0);
         }
-        setIsUploading(false);
       });
 
       xhr.addEventListener("error", () => {
+        clearInterval(progressInterval);
         setUploadStatus("❌ Network error during upload.");
         setIsUploading(false);
+        setUploadProgress(0);
       });
 
       xhr.open("POST", "http://127.0.0.1:5000/upload", true);
@@ -95,6 +119,7 @@ export default function UploadPage({ onUploadComplete }) {
     } catch (error) {
       setUploadStatus(`❌ Error: ${error.message}`);
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -105,13 +130,15 @@ export default function UploadPage({ onUploadComplete }) {
           onSubmit={handlePatientInfoSubmit}
           onCancel={() => window.history.back()}
           isLoading={false}
+          autoFillAndSubmit={autoFillAndSubmit}
+          onAutoFillComplete={onAutoFillComplete}
         />
       ) : (
         <div className="upload-page">
           <div className="upload-container">
             <div className="upload-header">
               <h1 className="mb-4">
-                <span className="brain-emoji">🧠</span> Upload Brain Scan Images
+                Upload Brain Scan Images
               </h1>
               {patientInfo && (
                 <div className="patient-info-summary">
@@ -159,16 +186,33 @@ export default function UploadPage({ onUploadComplete }) {
         {/* Selected Files List */}
         {selectedFiles.length > 0 && (
           <div className="selected-files mt-4">
-            <h5>Selected Files ({selectedFiles.length})</h5>
+            <div className="selected-files-header">
+              <h5>Selected Files</h5>
+              <button
+                className="btn-clear-files"
+                onClick={() => setSelectedFiles([])}
+                title="Clear all selected files"
+              >
+                🗑️
+              </button>
+            </div>
             <div className="file-list">
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="file-item">
-                  <span className="file-name">{file.name}</span>
-                  <span className="file-size">
-                    {(file.size / 1024 / 1024).toFixed(2)} MB
-                  </span>
-                </div>
-              ))}
+              {selectedFiles.map((file, index) => {
+                const fileSizeMB = file.size / 1024 / 1024;
+                const fileSizeKB = file.size / 1024;
+                const displaySize = fileSizeMB >= 1 
+                  ? `${fileSizeMB.toFixed(2)} MB` 
+                  : `${fileSizeKB.toFixed(2)} KB`;
+                
+                return (
+                  <div key={index} className="file-item">
+                    <span className="file-name">{file.name}</span>
+                    <span className="file-size">
+                      {displaySize}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -177,7 +221,7 @@ export default function UploadPage({ onUploadComplete }) {
         {isUploading && (
           <div className="progress mt-4" style={{ height: "25px" }}>
             <div
-              className="progress-bar bg-success"
+              className="progress-bar progress-bar-upload"
               role="progressbar"
               style={{ width: `${uploadProgress}%` }}
               aria-valuenow={uploadProgress}
@@ -233,12 +277,12 @@ export default function UploadPage({ onUploadComplete }) {
         )}
 
         {/* Demo Brain Image */}
-        <div className="demo-image-section">
+        {/* <div className="demo-image-section">
           <h3>📋 Demo Brain Scan Image</h3>
           <div className="demo-image-container">
             <img src="/MRI_of_Human_Brain.jpg" alt="Demo MRI Brain Scan" />
           </div>
-        </div>
+        </div> */}
           </div>
         </div>
       )}

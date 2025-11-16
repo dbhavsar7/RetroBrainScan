@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./PatientInfoForm.css";
 
-export default function PatientInfoForm({ onSubmit, onCancel, isLoading }) {
+export default function PatientInfoForm({ onSubmit, onCancel, isLoading, autoFillAndSubmit, onAutoFillComplete }) {
   const [patientData, setPatientData] = useState({
     patient: {
       name: "",
@@ -81,6 +81,64 @@ export default function PatientInfoForm({ onSubmit, onCancel, isLoading }) {
     }
   };
 
+  const handleAutofill = () => {
+    setPatientData({
+      patient: {
+        name: "Cake Jlouse",
+        age: "30",
+        gender: "Male",
+        mrn: "MRN-2025-001116",
+        dateOfBirth: "1995-11-06", // Format: YYYY-MM-DD for date input
+        hospital: "General Medical Center",
+      },
+      doctor: {
+        name: "Dr. Brew Dhavsar",
+        specialty: "Neuroradiology",
+        license: "#NR-111625",
+      },
+    });
+    // Clear any existing errors
+    setErrors({});
+  };
+
+  // Auto-fill and submit when triggered from navigation
+  useEffect(() => {
+    if (autoFillAndSubmit) {
+      // Auto-fill the form
+      handleAutofill();
+      
+      // Wait a brief moment for state to update, then submit
+      const timer = setTimeout(() => {
+        const autofilledData = {
+          patient: {
+            name: "Cake Jlouse",
+            age: "30",
+            gender: "Male",
+            mrn: "MRN-2025-001116",
+            dateOfBirth: "1995-11-06",
+            hospital: "General Medical Center",
+          },
+          doctor: {
+            name: "Dr. Brew Dhavsar",
+            specialty: "Neuroradiology",
+            license: "#NR-111625",
+          },
+        };
+        
+        // Submit the form
+        onSubmit(autofilledData);
+        
+        // Notify parent that auto-fill is complete
+        if (onAutoFillComplete) {
+          onAutoFillComplete();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFillAndSubmit]);
+
   return (
     <div className="patient-info-form-container">
       <div className="form-card">
@@ -92,7 +150,18 @@ export default function PatientInfoForm({ onSubmit, onCancel, isLoading }) {
         <form onSubmit={handleSubmit} className="patient-form">
           {/* Patient Information Section */}
           <div className="form-section">
-            <h3 className="section-title">Patient Information</h3>
+            <div className="section-title-wrapper">
+              <h3 className="section-title">Patient Information</h3>
+              <button
+                type="button"
+                className="autofill-btn"
+                onClick={handleAutofill}
+                title="Autofill sample patient information"
+              >
+                <span className="autofill-icon">⚡</span>
+                <span className="autofill-text">Autofill</span>
+              </button>
+            </div>
 
             <div className="form-group">
               <label htmlFor="patient-name">Patient Name *</label>
@@ -251,14 +320,6 @@ export default function PatientInfoForm({ onSubmit, onCancel, isLoading }) {
 
           {/* Form Actions */}
           <div className="form-actions">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
-            </button>
             <button
               type="submit"
               className="btn btn-primary"
