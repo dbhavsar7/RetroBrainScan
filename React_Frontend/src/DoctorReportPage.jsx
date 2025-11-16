@@ -64,6 +64,8 @@ const DUMMY_REPORT_DATA = {
 
 export default function DoctorReportPage({ onBackClick }) {
   const [showRawData, setShowRawData] = useState(false);
+  const [imageSrc, setImageSrc] = useState("/MRI_of_Human_Brain.jpg");
+  const [imageError, setImageError] = useState(false);
 
   const handleDownloadPDF = async () => {
     try {
@@ -129,6 +131,39 @@ export default function DoctorReportPage({ onBackClick }) {
             </button>
           </div>
         </div>
+
+        {/* Brain Scan Image */}
+        <section className="report-section brain-scan-section">
+          <div className="brain-scan-image-container">
+            {!imageError ? (
+              <img 
+                src={imageSrc} 
+                alt="MRI Brain Scan" 
+                className="brain-scan-image"
+                onError={() => {
+                  // Try fallback source from backend static folder
+                  if (imageSrc === "/MRI_of_Human_Brain.jpg") {
+                    setImageSrc("http://127.0.0.1:5000/static/images/MRI_of_Human_Brain.jpg");
+                  } else {
+                    setImageError(true);
+                  }
+                }}
+              />
+            ) : (
+              <div style={{ 
+                padding: "40px", 
+                textAlign: "center", 
+                color: "#999",
+                fontSize: "0.9rem"
+              }}>
+                <p>📁 MRI Brain Scan Image</p>
+                <p style={{ fontSize: "0.8rem", marginTop: "10px" }}>
+                  (Image not found - place MRI_of_Human_Brain.jpg in public folder)
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Patient Information */}
         <section className="report-section patient-info">

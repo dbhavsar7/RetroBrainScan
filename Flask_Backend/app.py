@@ -10,11 +10,11 @@ from io import BytesIO
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image as RLImage
 from reportlab.lib import colors
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 CORS(app)
 
 # Configuration
@@ -156,6 +156,28 @@ def get_stats():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/test-image', methods=['GET'])
+def test_image():
+    """Test endpoint to verify image file exists"""
+    try:
+        image_path = 'static/images/MRI_of_Human_Brain.jpg'
+        if os.path.exists(image_path):
+            return jsonify({
+                "status": "success",
+                "message": "Image file found",
+                "path": image_path,
+                "size": os.path.getsize(image_path)
+            }), 200
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Image file not found",
+                "path": image_path
+            }), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/generate-report', methods=['POST'])
 def generate_report():
     """Generate a PDF report from JSON data"""
@@ -222,6 +244,18 @@ def generate_report():
         # Title
         elements.append(Paragraph("🧠 BRAIN SCAN ANALYSIS REPORT", title_style))
         elements.append(Spacer(1, 0.2*inch))
+        
+        # Try to load and add the MRI brain scan image
+        try:
+            image_path = 'static/images/MRI_of_Human_Brain.jpg'
+            if os.path.exists(image_path):
+                img = RLImage(image_path, width=4*inch, height=4*inch)
+                elements.append(img)
+                elements.append(Spacer(1, 0.2*inch))
+            else:
+                print(f"Warning: Image not found at {image_path}")
+        except Exception as img_err:
+            print(f"Warning: Could not add image to PDF: {img_err}")
         
         # Report Info
         report_info = [
