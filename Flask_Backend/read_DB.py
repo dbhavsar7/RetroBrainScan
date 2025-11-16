@@ -1,11 +1,11 @@
 import sqlite3  # Import SQLite library
 
-CAMERA_DATABASE = 'RetroBrainScanDB.db'
+RETRO_DATABASE = 'RetroBrainScanDB.db'
 TABLE_NAME = 'ImageData'
 
 
 def read_metadata_from_db():
-    conn = sqlite3.connect(CAMERA_DATABASE)
+    conn = sqlite3.connect(RETRO_DATABASE)
     c = conn.cursor()
     
     c.execute(f"SELECT * FROM {TABLE_NAME}")
@@ -26,11 +26,8 @@ def read_metadata_from_db():
                 image_data TEXT NOT NULL,
                 metadata TEXT
             '''
-            # print(f"ID: {row[0]}, Camera Name: {row[1]}, Camera IP: {row[2]}, "
-            #       f"Location: {row[3]}, Start Time: {row[4]}, Stop Time: {row[5]}, "
-            #       f"Video Filename: {row[6]}")
     else:
-        print(f"No entries found in the {CAMERA_DATABASE} database.")
+        print(f"No entries found in the {RETRO_DATABASE} database.")
 
     conn.close()
 
