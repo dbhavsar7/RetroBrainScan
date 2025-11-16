@@ -97,7 +97,13 @@ export default function ProcessingPage({ onProcessingComplete, uploadedImages, p
   return (
     <div className="processing-page">
       <div className="processing-container">
-        <div className="processing-icon">🧠</div>
+        <div className="processing-icon">
+          <img 
+            src="/RBS_Logo_T.png" 
+            alt="RetroBrainScan Logo" 
+            style={{ width: '150px', height: '150px' }}
+          />
+        </div>
         <h2 className="processing-title">Analyzing Brain Scan</h2>
         <p className="processing-subtitle">{error || "Running AI model analysis..."}</p>
 

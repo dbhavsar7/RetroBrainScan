@@ -4,7 +4,7 @@ import PatientInfoForm from "./PatientInfoForm";
 
 export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAutoFillComplete }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState({}); // Object to track progress per file
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -50,10 +50,15 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
     }
 
     setIsUploading(true);
-    setUploadProgress(0);
+    // Initialize progress for each file
+    const initialProgress = {};
+    selectedFiles.forEach((file) => {
+      initialProgress[file.name] = 0;
+    });
+    setUploadProgress(initialProgress);
     setUploadStatus("Uploading images...");
 
-    // Simulate progress animation to 90% over 2.5 seconds
+    // Simulate progress animation to 90% over 2.5 seconds for all files
     let simulatedProgress = 0;
     const progressInterval = setInterval(() => {
       simulatedProgress += 1.8; // Increment by 1.8% every ~45ms to reach 90% in ~2.5s
@@ -61,7 +66,12 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
         simulatedProgress = 90;
         clearInterval(progressInterval);
       }
-      setUploadProgress(simulatedProgress);
+      // Update progress for all files
+      const newProgress = {};
+      selectedFiles.forEach((file) => {
+        newProgress[file.name] = simulatedProgress;
+      });
+      setUploadProgress(newProgress);
     }, 45);
 
     try {
@@ -77,7 +87,11 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
           const percentComplete = (e.loaded / e.total) * 100;
           // Use actual upload progress if it's ahead of simulated progress
           if (percentComplete > simulatedProgress && percentComplete < 90) {
-            setUploadProgress(percentComplete);
+            const newProgress = {};
+            selectedFiles.forEach((file) => {
+              newProgress[file.name] = percentComplete;
+            });
+            setUploadProgress(newProgress);
             simulatedProgress = percentComplete;
           }
         }
@@ -89,21 +103,25 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           
-          // Complete the progress bar to 100%
-          setUploadProgress(100);
+          // Complete the progress bar to 100% for all files
+          const completeProgress = {};
+          selectedFiles.forEach((file) => {
+            completeProgress[file.name] = 100;
+          });
+          setUploadProgress(completeProgress);
           setUploadStatus("✅ Images uploaded successfully!");
           setUploadedImages(response.uploaded_images || []);
           
           // Wait a moment to show 100%, then move to processing
           setTimeout(() => {
             setSelectedFiles([]);
-            setUploadProgress(0);
+            setUploadProgress({});
             onUploadComplete(patientInfo, response.uploaded_images || []);
           }, 800);
         } else {
           setUploadStatus("❌ Upload failed. Please try again.");
           setIsUploading(false);
-          setUploadProgress(0);
+          setUploadProgress({});
         }
       });
 
@@ -111,7 +129,7 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
         clearInterval(progressInterval);
         setUploadStatus("❌ Network error during upload.");
         setIsUploading(false);
-        setUploadProgress(0);
+        setUploadProgress({});
       });
 
       xhr.open("POST", "http://127.0.0.1:5000/upload", true);
@@ -119,7 +137,7 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
     } catch (error) {
       setUploadStatus(`❌ Error: ${error.message}`);
       setIsUploading(false);
-      setUploadProgress(0);
+      setUploadProgress({});
     }
   };
 
@@ -204,12 +222,42 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
                   ? `${fileSizeMB.toFixed(2)} MB` 
                   : `${fileSizeKB.toFixed(2)} KB`;
                 
+                const progress = uploadProgress[file.name] || 0;
+                const isUploadingFile = isUploading && progress > 0;
+                
                 return (
                   <div key={index} className="file-item">
-                    <span className="file-name">{file.name}</span>
-                    <span className="file-size">
-                      {displaySize}
-                    </span>
+                    {isUploadingFile ? (
+                      <>
+                        <div 
+                          className="file-progress-bar progress-bar-upload"
+                          style={{ 
+                            position: 'absolute',
+                            left: 0,
+                            top: 0,
+                            height: '100%',
+                            width: `${progress}%`,
+                            transition: 'width 0.4s ease',
+                            zIndex: 0
+                          }}
+                        />
+                        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px' }}>
+                          <span className="file-name" style={{ color: progress === 100 ? 'white' : '#333' }}>
+                            {file.name}
+                          </span>
+                          <span className="file-size" style={{ color: progress === 100 ? 'white' : '#999' }}>
+                            {progress.toFixed(0)}%
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <span className="file-name">{file.name}</span>
+                        <span className="file-size">
+                          {displaySize}
+                        </span>
+                      </>
+                    )}
                   </div>
                 );
               })}
@@ -217,21 +265,6 @@ export default function UploadPage({ onUploadComplete, autoFillAndSubmit, onAuto
           </div>
         )}
 
-        {/* Upload Progress */}
-        {isUploading && (
-          <div className="progress mt-4" style={{ height: "25px" }}>
-            <div
-              className="progress-bar progress-bar-upload"
-              role="progressbar"
-              style={{ width: `${uploadProgress}%` }}
-              aria-valuenow={uploadProgress}
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
-              {uploadProgress.toFixed(0)}%
-            </div>
-          </div>
-        )}
 
         {/* Upload Status */}
         {uploadStatus && (

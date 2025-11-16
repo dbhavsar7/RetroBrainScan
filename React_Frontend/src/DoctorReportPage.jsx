@@ -166,7 +166,7 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
         {/* Header */}
         <div className="report-header">
           <div className="header-content">
-            <h1>🧠 Brain Scan Analysis Report</h1>
+            <h1>RetroBrainScan Analysis Report</h1>
             <p className="report-id">Report ID: {reportData.patient.mrn}</p>
           </div>
           <div className="header-actions">
@@ -319,15 +319,6 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
                   </div>
                 </div>
                 <p className="finding-description">{finding.description}</p>
-                <div className="confidence-bar">
-                  <span className="confidence-label">AI Confidence: {finding.confidence}%</span>
-                  <div className="confidence-meter">
-                    <div
-                      className="confidence-fill"
-                      style={{ width: `${finding.confidence}%` }}
-                    ></div>
-                  </div>
-                </div>
               </div>
             ))}
           </div>
@@ -352,21 +343,88 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
         </section>
 
         {/* Care Plan Section */}
-        {analysisResults?.care_plan && (
-          <section className="report-section care-plan">
-            <h2>Personalized Patient Care Plan</h2>
-            <div className="care-plan-content" style={{ 
-              whiteSpace: 'pre-wrap', 
-              lineHeight: '1.6',
-              padding: '20px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
-              border: '1px solid #e0e0e0'
-            }}>
-              {analysisResults.care_plan}
-            </div>
-          </section>
-        )}
+        {analysisResults?.care_plan && (() => {
+          // Process care plan text
+          let processedText = analysisResults.care_plan;
+          
+          // Remove all ==== lines
+          processedText = processedText.replace(/=+\n?/g, '');
+          
+          // Remove all ** markdown
+          processedText = processedText.replace(/\*\*/g, '');
+          
+          // Split into lines and process
+          const lines = processedText.split('\n');
+          const processedLines = lines.map((line, index) => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return null;
+            
+            // Patterns to underline and bold
+            const underlinePatterns = [
+              /^A\.\s+Immediate\s+\(0–3\s+months\)/i,
+              /^B\.\s+Short\s+Term\s+\(3–12\s+months\)/i,
+              /^C\.\s+Long\s+Term\s+\(1–3\s+years\)/i,
+              /^D\.\s+Future\s+Projection\s+\(3–5\s+years\)/i,
+              /^Worsens:/i,
+              /^Stable:/i,
+              /^What\s+Worsens:/i,
+              /^What\s+Stays\s+Stable:/i,
+              /"Red\s+Flag"\s+Indicators:/i,
+              /^Red\s+Flag\s+Indicators:/i,
+            ];
+            
+            // Check if line matches underline pattern
+            const shouldUnderline = underlinePatterns.some(pattern => pattern.test(trimmedLine));
+            
+            // Check if line starts with an asterisk (bullet point)
+            const bulletMatch = trimmedLine.match(/^\*\s+(.+)$/);
+            
+            // Check if line starts with a number (numbered bullet point)
+            const numberedMatch = trimmedLine.match(/^(\d+\.?\s+)(.+)$/);
+            
+            if (numberedMatch) {
+              // Make entire numbered line bold
+              if (shouldUnderline) {
+                return <p key={index} className="care-plan-line"><b><u>{trimmedLine}</u></b></p>;
+              } else {
+                return <p key={index} className="care-plan-line"><b>{trimmedLine}</b></p>;
+              }
+            } else if (bulletMatch) {
+              // Convert asterisk to bullet point
+              const content = bulletMatch[1];
+              if (shouldUnderline) {
+                return <p key={index} className="care-plan-line care-plan-bullet"><u>{content}</u></p>;
+              } else {
+                return <p key={index} className="care-plan-line care-plan-bullet">{content}</p>;
+              }
+            } else {
+              // Regular line
+              if (shouldUnderline) {
+                return <p key={index} className="care-plan-line"><u>{trimmedLine}</u></p>;
+              } else {
+                return <p key={index} className="care-plan-line">{trimmedLine}</p>;
+              }
+            }
+          }).filter(line => line !== null);
+          
+          return (
+            <section className="report-section care-plan">
+              <h2>Personalized Patient Care Plan</h2>
+              <div className="care-plan-content" style={{ 
+                whiteSpace: 'pre-wrap', 
+                lineHeight: '1.6',
+                padding: '20px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '8px',
+                border: '1px solid #e0e0e0',
+                textAlign: 'left',
+                textAlignLast: 'left'
+              }}>
+                {processedLines}
+              </div>
+            </section>
+          );
+        })()}
 
         {/* Radiologist Information */}
         <section className="report-section radiologist-info">
@@ -405,8 +463,15 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
 
         {/* Footer */}
         <div className="report-footer">
-          <p>This is a demonstration report with dummy data for testing purposes.</p>
-          <p>Generated on: {new Date().toLocaleString()}</p>
+          <p>
+            <a href="https://hackrpi.com" target="_blank" rel="noopener noreferrer" className="footer-link">
+              HACKRPI
+            </a>
+            {' X '}
+            <a href="#" className="footer-link">
+              RetroBrainScan
+            </a>
+          </p>
         </div>
       </div>
     </div>

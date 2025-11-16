@@ -343,6 +343,43 @@
   margin-top: 20px;
 }
 
+/* Care Plan Section */
+.care-plan-content {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+  text-align-last: left;
+}
+
+.care-plan-line {
+  margin: 0 0 10px 0;
+  text-align: left;
+  text-align-last: left;
+  text-justify: inter-word;
+}
+
+.care-plan-line:last-child {
+  margin-bottom: 0;
+}
+
+.care-plan-bullet {
+  padding-left: 20px;
+  position: relative;
+}
+
+.care-plan-bullet::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #0B3555;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
 /* Footer */
 .report-footer {
   background-color: #f8f9ff;
@@ -355,6 +392,18 @@
   color: #999;
   font-size: 0.9rem;
   margin: 5px 0;
+}
+
+.footer-link {
+  color: #2CA3D8;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #0B3555;
+  text-decoration: underline;
 }
 
 @media (max-width: 768px) {

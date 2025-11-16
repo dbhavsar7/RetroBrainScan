@@ -6,6 +6,7 @@ from db_utils import DatabaseManager
 import os
 import base64
 import json
+import re
 from io import BytesIO
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -267,7 +268,8 @@ def generate_report():
         scan_info = data.get('scanInfo', {})
         analysis = data.get('analysis', {})
         recommendations = data.get('recommendations', [])
-        radiologist = data.get('radiologist', {})
+        # Try both 'doctor' and 'radiologist' for backward compatibility
+        doctor = data.get('doctor', data.get('radiologist', {}))
         analysis_results = data.get('analysisResults', {})
         care_plan = data.get('care_plan', '')
         
@@ -292,6 +294,16 @@ def generate_report():
         
         title_style = ParagraphStyle(
             'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            textColor=colors.HexColor('#0B3555'),
+            spaceAfter=10,
+            alignment=0,  # Left (will be centered in table)
+            fontName='Helvetica-Bold'
+        )
+        
+        title_style_centered = ParagraphStyle(
+            'CustomTitleCentered',
             parent=styles['Heading1'],
             fontSize=24,
             textColor=colors.HexColor('#0B3555'),
@@ -321,8 +333,36 @@ def generate_report():
             spaceAfter=6
         )
         
-        # Title
-        elements.append(Paragraph("🧠 BRAIN SCAN ANALYSIS REPORT", title_style))
+        # Logo and Title Section
+        # Try to load logo from Assets folder
+        logo_path = os.path.join(os.path.dirname(__file__), '..', 'Assets', 'RBS_Logo_T.png')
+        if not os.path.exists(logo_path):
+            # Try alternative path
+            logo_path = os.path.join(os.path.dirname(__file__), '..', '..', 'Assets', 'RBS_Logo_T.png')
+        
+        # Create a table for logo and title side by side
+        header_data = []
+        if os.path.exists(logo_path):
+            try:
+                logo_img = Image(logo_path, width=1.5*inch, height=1.5*inch)
+                header_data.append([logo_img, Paragraph("RetroBrainScan Analysis Report", title_style_centered)])
+            except Exception as e:
+                print(f"Warning: Could not load logo: {e}")
+                header_data.append(['', Paragraph("RetroBrainScan Analysis Report", title_style_centered)])
+        else:
+            header_data.append(['', Paragraph("RetroBrainScan Analysis Report", title_style_centered)])
+        
+        header_table = Table(header_data, colWidths=[2*inch, 4*inch])
+        header_table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (1, 0), (1, 0), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('LEFTPADDING', (0, 0), (0, 0), 0),
+            ('RIGHTPADDING', (0, 0), (0, 0), 0),
+            ('TOPPADDING', (0, 0), (-1, -1), 0),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+        ]))
+        elements.append(header_table)
         elements.append(Spacer(1, 0.2*inch))
         
         # Helper function to add base64 images
@@ -469,7 +509,7 @@ def generate_report():
         for finding in findings:
             finding_text = f"<b>{finding.get('title', 'N/A')} - {finding.get('status', 'N/A')}</b><br/>"
             finding_text += finding.get('description', 'N/A')
-            finding_text += f"<br/><i>Confidence: {finding.get('confidence', 0)}%</i>"
+            # Removed confidence line
             elements.append(Paragraph(finding_text, normal_style))
             elements.append(Spacer(1, 0.1*inch))
         
@@ -491,23 +531,66 @@ def generate_report():
         if care_plan:
             elements.append(PageBreak())
             elements.append(Paragraph("PERSONALIZED PATIENT CARE PLAN", heading_style))
-            # Split care plan into paragraphs and add them
-            care_plan_paragraphs = care_plan.split('\n\n')
-            for para in care_plan_paragraphs:
-                if para.strip():
-                    # Clean up markdown-style formatting
-                    para_clean = para.replace('**', '').replace('*', '').strip()
-                    if para_clean:
-                        elements.append(Paragraph(para_clean, normal_style))
-                        elements.append(Spacer(1, 0.1*inch))
+            # Process care plan text
+            # Remove all "=======" lines
+            care_plan_clean = re.sub(r'=+\n?', '', care_plan)
+            # Remove all ** markdown formatting
+            care_plan_clean = care_plan_clean.replace('**', '')
+            # Split by lines
+            lines = care_plan_clean.split('\n')
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                
+                # Patterns to underline
+                underline_patterns = [
+                    r'^A\.\s+Immediate\s+\(0–3\s+months\)',
+                    r'^B\.\s+Short\s+Term\s+\(3–12\s+months\)',
+                    r'^C\.\s+Long\s+Term\s+\(1–3\s+years\)',
+                    r'^D\.\s+Future\s+Projection\s+\(3–5\s+years\)',
+                    r'^Worsens:',
+                    r'^Stable:',
+                    r'^What\s+Worsens:',
+                    r'^What\s+Stays\s+Stable:',
+                    r'"Red\s+Flag"\s+Indicators:',
+                    r'^Red\s+Flag\s+Indicators:',
+                ]
+                
+                # Check if line matches any underline pattern
+                should_underline = False
+                for pattern in underline_patterns:
+                    if re.match(pattern, line, re.IGNORECASE):
+                        should_underline = True
+                        break
+                
+                # Check if line starts with a number (numbered bullet point)
+                numbered_match = re.match(r'^(\d+\.?\s+)(.+)$', line)
+                if numbered_match:
+                    # Make the entire line bold
+                    if should_underline:
+                        para_text = f"<b><u>{line}</u></b>"
+                    else:
+                        para_text = f"<b>{line}</b>"
+                    elements.append(Paragraph(para_text, normal_style))
+                else:
+                    # Regular paragraph
+                    if should_underline:
+                        para_text = f"<u>{line}</u>"
+                    else:
+                        # Clean up any remaining markdown
+                        para_text = line.replace('*', '').strip()
+                    if para_text:
+                        elements.append(Paragraph(para_text, normal_style))
+                elements.append(Spacer(1, 0.1*inch))
             elements.append(Spacer(1, 0.15*inch))
         
         # Radiologist Information Section
         elements.append(Paragraph("RADIOLOGIST INFORMATION", heading_style))
         rad_info = [
-            ['Radiologist:', radiologist.get('name', 'N/A')],
-            ['Specialty:', radiologist.get('specialty', 'N/A')],
-            ['License:', radiologist.get('license', 'N/A')]
+            ['Radiologist:', doctor.get('name', 'N/A')],
+            ['Specialty:', doctor.get('specialty', 'N/A')],
+            ['License:', doctor.get('license', 'N/A')]
         ]
         rad_table = Table(rad_info, colWidths=[1.5*inch, 4.5*inch])
         rad_table.setStyle(TableStyle([

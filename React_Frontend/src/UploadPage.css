@@ -181,6 +181,22 @@
   background-color: white;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+.file-progress-bar {
+  border-radius: 6px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: width 0.4s ease;
+}
+
+.file-progress-bar.progress-bar-upload {
+  background: linear-gradient(90deg, #2CA3D8 0%, #0B3555 100%);
 }
 
 .file-name {

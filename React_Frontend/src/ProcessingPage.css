@@ -21,6 +21,9 @@
   font-size: 5rem;
   margin-bottom: 20px;
   animation: float 3s ease-in-out infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @keyframes float {
@@ -57,7 +60,7 @@
 .loading-dots span {
   width: 10px;
   height: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2CA3D8 0%, #0B3555 100%);
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out both;
 }
@@ -98,7 +101,7 @@
 
 .processing-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, #2CA3D8 0%, #0B3555 100%);
   width: 0%;
   transition: width 0.05s linear;
   border-radius: 10px;
@@ -106,7 +109,7 @@
 
 .progress-text {
   font-size: 0.9rem;
-  color: #667eea;
+  color: #2CA3D8;
   font-weight: 600;
   margin: 0;
 }
@@ -132,6 +135,17 @@
   opacity: 1;
 }
 
+.step.completed .step-number {
+  background: linear-gradient(135deg, #2CA3D8 0%, #0B3555 100%);
+  color: white;
+  border-color: #2CA3D8;
+}
+
+.step.completed .step-text {
+  color: #2CA3D8;
+  font-weight: 600;
+}
+
 .step-number {
   width: 40px;
   height: 40px;
@@ -148,10 +162,10 @@
 }
 
 .step.active .step-number {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2CA3D8 0%, #0B3555 100%);
   color: white;
-  border-color: #667eea;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  border-color: #2CA3D8;
+  box-shadow: 0 4px 15px rgba(44, 163, 216, 0.4);
 }
 
 .step-text {
@@ -162,7 +176,7 @@
 }
 
 .step.active .step-text {
-  color: #667eea;
+  color: #2CA3D8;
   font-weight: 600;
 }
 
