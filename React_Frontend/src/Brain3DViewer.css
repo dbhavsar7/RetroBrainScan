@@ -1,0 +1,131 @@
+.brain-3d-viewer {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8e9ff 100%);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #667eea;
+  margin-top: 20px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+}
+
+.brain-canvas {
+  width: 100%;
+  height: 600px;
+  position: relative;
+  cursor: grab;
+}
+
+.brain-canvas:active {
+  cursor: grabbing;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(240, 244, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  gap: 15px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e9ecef;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-overlay p {
+  color: #667eea;
+  font-weight: 600;
+  margin: 0;
+}
+
+.brain-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 15px 20px;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.control-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-color.abnormal {
+  background-color: #ff6b6b;
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+}
+
+.legend-color.mild {
+  background-color: #ffc107;
+  box-shadow: 0 0 8px rgba(255, 193, 7, 0.5);
+}
+
+@media (max-width: 768px) {
+  .brain-3d-viewer {
+    min-height: 400px;
+  }
+
+  .brain-canvas {
+    height: 400px;
+  }
+
+  .brain-controls {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .legend {
+    width: 100%;
+    justify-content: center;
+  }
+}

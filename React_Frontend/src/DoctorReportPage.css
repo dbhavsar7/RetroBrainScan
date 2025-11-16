@@ -119,6 +119,25 @@
   border: 2px solid #667eea;
 }
 
+/* 3D Brain Section */
+.brain-3d-section {
+  background-color: #f8f9ff;
+}
+
+.brain-3d-section h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.section-description {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
 /* Report Sections */
 .report-section {
   padding: 30px 40px;

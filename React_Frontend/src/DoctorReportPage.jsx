@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./DoctorReportPage.css";
+import Brain3DViewer from "./Brain3DViewer";
 
 const DUMMY_REPORT_DATA = {
   patient: {
@@ -220,6 +221,15 @@ export default function DoctorReportPage({ patientInfo, onBackClick }) {
               <span className="value">{reportData.scanInfo.scannerModel}</span>
             </div>
           </div>
+        </section>
+
+        {/* Interactive 3D Brain Model */}
+        <section className="report-section brain-3d-section">
+          <h2>Interactive 3D Brain Model</h2>
+          <p className="section-description">
+            Rotate the 3D brain model to visualize problem areas. Red highlights indicate abnormal findings, yellow indicates mild changes.
+          </p>
+          <Brain3DViewer findings={reportData.analysis.findings} />
         </section>
 
         {/* Analysis Findings */}
