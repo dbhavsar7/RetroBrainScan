@@ -120,6 +120,43 @@ def createFolderIfNotExists(folder_path=IMAGE_FOLDER):
     else:
         print(f"> Folder '{folder_path}' already exists.")
 
+
+# --- Function to setup .env file if it doesn't exist ---
+def setup_env_file():
+    """Create .env file from .env.example if it doesn't exist"""
+    env_file = ".env"
+    env_example = ".env.example"
+    
+    if os.path.exists(env_file):
+        print(f"> .env file already exists.")
+        return
+    
+    if os.path.exists(env_example):
+        print(f"\n=========== Setting up .env file ===========")
+        print(f"> Copying {env_example} to {env_file}...")
+        print(f"> ⚠️  IMPORTANT: Please edit {env_file} and add your GOOGLE_AI_API_KEY")
+        try:
+            with open(env_example, 'r') as src, open(env_file, 'w') as dst:
+                dst.write(src.read())
+            print(f"> {env_file} created. Please add your API key.")
+        except Exception as e:
+            print(f"> Warning: Could not create {env_file}: {e}")
+    else:
+        print(f"\n=========== Environment Configuration ===========")
+        print(f"> ⚠️  No .env file found. Creating template...")
+        env_template = """# Google Gemini AI Configuration
+# Get your API key from: https://makersuite.google.com/app/apikey
+
+GOOGLE_AI_API_KEY=your_api_key_here
+GEMINI_MODEL=gemini-2.0-flash-exp
+"""
+        try:
+            with open(env_file, 'w') as f:
+                f.write(env_template)
+            print(f"> {env_file} created. Please add your GOOGLE_AI_API_KEY")
+        except Exception as e:
+            print(f"> Warning: Could not create {env_file}: {e}")
+
 # -------------------------------
 # Run the app.py file
 # -------------------------------
@@ -136,6 +173,9 @@ def run_app(venv_dir=VENV_NAME):
 if __name__ == "__main__":
 
     createFolderIfNotExists()
+    
+    # Setup .env file
+    setup_env_file()
 
     # Initialize database
     init_database(DB_NAME)

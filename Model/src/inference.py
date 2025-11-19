@@ -12,9 +12,7 @@ from PIL import Image
 from torchvision import transforms
 
 
-# -------------------------------------------------
 # Utility — Classifier Risk Score
-# -------------------------------------------------
 def load_classifier(checkpoint_path="models/resnet18_alzheimer.pth"):
     device = get_device()
     ckpt = torch.load(checkpoint_path, map_location=device)
@@ -51,7 +49,6 @@ def get_risk_score(gray_numpy):
         logits = model(x)
         probs = torch.softmax(logits, dim=1)[0].cpu().numpy()
 
-    # find "No Impairment"
     no_idx = [i for i, c in enumerate(class_names) if "No" in c][0]
     risk = 1.0 - float(probs[no_idx])
     pred = class_names[int(np.argmax(probs))]
@@ -60,38 +57,19 @@ def get_risk_score(gray_numpy):
 
 
 def copy_original_as_heatmap(img_path, output_path):
-    """
-    Copy the original image (processed to match GradCAM format) to output path.
-    This is used as a guardrail when risk score is 0 (no impairment detected).
-    
-    Args:
-        img_path: Path to the original image
-        output_path: Path where the processed original image should be saved
-    
-    Returns:
-        numpy array: A dummy CAM array (zeros) for compatibility with region detection
-    """
-    # Load original MRI
+    """Copy original image as heatmap when risk score is 0"""
     orig = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     if orig is None:
         raise ValueError(f"Could not load image from {img_path}")
     
-    # Convert to RGB (same format as GradCAM overlay output)
     orig_rgb = cv2.cvtColor(orig, cv2.COLOR_GRAY2RGB)
-    
-    # Save the original image (no heatmap overlay)
     cv2.imwrite(output_path, orig_rgb)
     
-    # Return a dummy CAM array (zeros) for compatibility with region detection
-    # Since there's no impairment, there are no notable regions
     dummy_cam = np.zeros((128, 128), dtype=np.float32)
-    
     return dummy_cam
 
 
-# -------------------------------------------------
-# MAIN PIPELINE - Reusable function for Flask
-# -------------------------------------------------
+# Main pipeline function
 def analyze_brain_scan(
     img_path,
     classifier_path="models/resnet18_alzheimer.pth",
@@ -100,26 +78,10 @@ def analyze_brain_scan(
     output_dir="outputs",
     alpha=0.5
 ):
-    """
-    Analyze a brain scan image and return all results.
-    
-    Args:
-        img_path: Path to the input brain scan image
-        classifier_path: Path to classifier checkpoint
-        autoencoder_path: Path to autoencoder checkpoint
-        progression_path: Path to progression vector
-        output_dir: Directory to save output images
-        alpha: Progression factor (default 0.5)
-    
-    Returns:
-        dict: Results containing risk scores, predictions, and image paths
-    """
+    """Analyze a brain scan image and return all results"""
     import os
     
-    # Ensure output directory exists
     os.makedirs(output_dir, exist_ok=True)
-    
-    # Generate unique filenames to avoid conflicts
     import uuid
     unique_id = str(uuid.uuid4())[:8]
     
@@ -140,12 +102,10 @@ def analyze_brain_scan(
     curr_risk, curr_pred = get_risk_score(original_gray)
     print(f"🧠 CURRENT  → class={curr_pred}, risk={curr_risk:.3f}")
 
-    # -------------------------------------------------
-    # 1. CURRENT HEATMAP (classifier → GradCAM)
-    # Guardrail: If risk score is 0, show original image instead
-    # -------------------------------------------------
-    if curr_risk == 0.0:
-        print("🛡️  Guardrail: Risk score is 0. Using original scan instead of heatmap...")
+    # Current heatmap - guardrail: if risk score is very low (< 0.01), show original image
+    # This prevents GradCAM from showing activations when there's no impairment
+    if curr_risk < 0.01 or "No" in curr_pred:
+        print("🛡️  Guardrail: Risk score is very low or No Impairment detected. Using original scan instead of heatmap...")
         cam_current = copy_original_as_heatmap(img_path, current_cam_path)
         print(f"✅ Saved original scan: {current_cam_path}")
     else:
@@ -157,16 +117,12 @@ def analyze_brain_scan(
         )
         print(f"✅ Saved: {current_cam_path}")
 
-    # Extract brain regions from current CAM array
     print("🧠 Extracting current brain regions...")
     regions_current = extract_notable_regions(cam_current)
     print(f"📍 Current regions: {regions_current}")
 
-    # -------------------------------------------------
-    # 2. FUTURE MRI + FUTURE HEATMAP
-    # -------------------------------------------------
     print("⏳ Generating future MRI...")
-    future_mri_path, future_cam_path, cam_future = generate_future_mri(
+    future_mri_path, future_cam_path, cam_future_temp = generate_future_mri(
         img_path,
         autoencoder_path=autoencoder_path,
         progression_path=progression_path,
@@ -176,9 +132,6 @@ def analyze_brain_scan(
         alpha=alpha
     )
 
-    # -------------------------------------------------
-    # 3. COMPUTE FUTURE RISK SCORE (for guardrail)
-    # -------------------------------------------------
     print("\n📊 Computing future risk score...")
     future_gray = cv2.imread(future_mri_path, cv2.IMREAD_GRAYSCALE)
     if future_gray is None:
@@ -187,12 +140,14 @@ def analyze_brain_scan(
     futu_risk, futu_pred = get_risk_score(future_gray)
     print(f"🧠 FUTURE   → class={futu_pred}, risk={futu_risk:.3f}")
 
-    # Guardrail: If future risk score is 0, show future MRI instead of heatmap
-    if futu_risk == 0.0:
-        print("🛡️  Guardrail: Future risk score is 0. Using future MRI instead of heatmap...")
+    # Guardrail: if future risk score is very low (< 0.01), show future MRI instead of heatmap
+    if futu_risk < 0.01 or "No" in futu_pred:
+        print("🛡️  Guardrail: Future risk score is very low or No Impairment detected. Using future MRI instead of heatmap...")
         cam_future = copy_original_as_heatmap(future_mri_path, future_cam_path)
         print(f"✅ Saved future MRI: {future_cam_path}")
-    # Note: If future risk > 0, the heatmap was already generated by generate_future_mri()
+    else:
+        # Use the GradCAM that was already generated
+        cam_future = cam_future_temp
 
     # Extract brain regions from future CAM array
     print("🧠 Extracting future brain regions...")
@@ -215,7 +170,6 @@ def analyze_brain_scan(
 
 
 def run_full_inference():
-    # 🔥 Set your MRI path here
     img_path = "data/raw/test/Moderate Impairment/14.jpg"
 
     classifier_path = "models/resnet18_alzheimer.pth"
@@ -229,9 +183,6 @@ def run_full_inference():
         progression_path=progression_path
     )
     
-    # -------------------------------------------------
-    # Summary
-    # -------------------------------------------------
     print("\n🎉 COMPLETED! RESULTS ARE READY:")
     print(f"• Current Heatmap    → {results['current_heatmap_path']}")
     print(f"• Future MRI         → {results['future_mri_path']}")
@@ -240,8 +191,5 @@ def run_full_inference():
     print(f"• Future Risk Score  → {results['future_risk_score']:.3f} ({results['future_prediction']})")
 
 
-# -------------------------------------------------
-# Entry Point
-# -------------------------------------------------
 if __name__ == "__main__":
     run_full_inference()

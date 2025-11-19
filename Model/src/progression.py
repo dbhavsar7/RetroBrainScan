@@ -14,13 +14,10 @@ def load_autoencoder(checkpoint_path):
     device = get_device()
     ckpt = torch.load(checkpoint_path, map_location=device)
 
-    # ---- New format ----
     if isinstance(ckpt, dict) and "model_state_dict" in ckpt:
         latent_dim = ckpt.get("latent_dim", 64)
         img_size = ckpt.get("img_size", 128)
         state_dict = ckpt["model_state_dict"]
-
-    # ---- Old format ----
     else:
         latent_dim = 64
         img_size = 128

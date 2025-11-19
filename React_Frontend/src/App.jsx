@@ -2,7 +2,6 @@ import { useState } from "react";
 import UploadPage from "./UploadPage";
 import ProcessingPage from "./ProcessingPage";
 import DoctorReportPage from "./DoctorReportPage";
-import MessageSender from "./MessageSender";
 import "./App.css";
 
 function App() {
@@ -12,13 +11,11 @@ function App() {
   const [autoFillAndSubmit, setAutoFillAndSubmit] = useState(false);
 
   const handleUploadComplete = (info, uploadedImages) => {
-    // After upload, store patient info and uploaded images, go to processing page
     setPatientInfo({...info, uploadedImages});
     setCurrentPage("processing");
   };
 
   const handleProcessingComplete = (analysisResults) => {
-    // After processing, store results and go to report page
     setPatientInfo(prev => ({...prev, analysisResults}));
     setCurrentPage("report");
   };
@@ -30,7 +27,6 @@ function App() {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {/* Navigation - Hidden on processing and report pages */}
       {currentPage !== "processing" && currentPage !== "report" && (
         <nav className="navbar navbar-expand-lg bg-white shadow">
           <div className="container-fluid">
@@ -42,7 +38,7 @@ function App() {
                 setCurrentPage("upload");
                 setPatientInfo(null);
                 setAutoFillAndSubmit(false);
-                setUploadPageKey(prev => prev + 1); // Force remount to reset UploadPage state
+                setUploadPageKey(prev => prev + 1);
               }}
             >
               <img 
@@ -72,31 +68,19 @@ function App() {
                     Upload Images
                   </button>
                 </li>
-                {/* <li className="nav-item">
-                  <button 
-                    className={`nav-link btn btn-link ${currentPage === "test" ? "active" : ""}`}
-                    onClick={() => setCurrentPage("test")}
-                  >
-                    Test API
-                  </button>
-                </li> */}
               </ul>
             </div>
           </div>
         </nav>
       )}
 
-      {/* Main Content */}
       <main className="flex-grow-1 py-4">
         <div className={currentPage === "processing" || currentPage === "report" ? "" : "container-fluid"}>
           {currentPage === "upload" && <UploadPage key={uploadPageKey} onUploadComplete={handleUploadComplete} autoFillAndSubmit={autoFillAndSubmit} onAutoFillComplete={() => setAutoFillAndSubmit(false)} />}
           {currentPage === "processing" && <ProcessingPage onProcessingComplete={handleProcessingComplete} uploadedImages={patientInfo?.uploadedImages} patientInfo={patientInfo} />}
           {currentPage === "report" && <DoctorReportPage patientInfo={patientInfo} onBackClick={handleBackToUpload} />}
-          {/* {currentPage === "test" && <MessageSender />} */}
         </div>
       </main>
-
-      {/* Footer - Hidden on processing and report pages */}
       {currentPage !== "processing" && currentPage !== "report" && (
         <footer className="bg-dark text-white text-center py-3 mt-auto">
           <p className="mb-0">

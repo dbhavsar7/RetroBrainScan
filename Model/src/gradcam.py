@@ -11,9 +11,7 @@ import cv2
 from src.models import AlzheimerResNet, get_device
 
 
-# ===============================================================
-# GRADCAM IMPLEMENTATION
-# ===============================================================
+# GradCAM implementation
 class GradCAM:
     def __init__(self, model, target_layer):
         self.model = model
@@ -61,9 +59,7 @@ class GradCAM:
         return cam
 
 
-# ===============================================================
-# IMAGE LOADING (grayscale + crop + RGB convert)
-# ===============================================================
+# Image loading (grayscale + crop + RGB convert)
 def load_image(img_path, img_size=128):
     """
     1. Force grayscale
@@ -102,9 +98,7 @@ def load_image(img_path, img_size=128):
     return transform(img_rgb).unsqueeze(0)
 
 
-# ===============================================================
-# OVERLAY HEATMAP (improved)
-# ===============================================================
+# Overlay heatmap
 def overlay_heatmap(img_path, heatmap, output_path, alpha=0.45):
     """
     1. Resize CAM to MRI shape
@@ -152,9 +146,7 @@ def overlay_heatmap(img_path, heatmap, output_path, alpha=0.45):
     cv2.imwrite(output_path, blended)
 
 
-# ===============================================================
-# HELPER: Get CAM array only (no saving)
-# ===============================================================
+# Get CAM array only (no saving)
 def get_cam_array(
     img_path,
     checkpoint_path="models/resnet18_alzheimer.pth",
@@ -179,9 +171,7 @@ def get_cam_array(
     return cam
 
 
-# ===============================================================
-# MAIN ENTRYPOINT
-# ===============================================================
+# Main entrypoint
 def generate_cam(
     img_path,
     checkpoint_path="models/resnet18_alzheimer.pth",

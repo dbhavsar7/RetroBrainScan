@@ -5,9 +5,7 @@ import json
 import numpy as np
 
 
-# -------------------------------------------
 # Load brain region lookup file
-# -------------------------------------------
 def load_brain_regions():
     regions_path = os.path.join(os.path.dirname(__file__), "brain_regions.json")
     with open(regions_path, "r") as f:
@@ -15,9 +13,7 @@ def load_brain_regions():
     return data["spatial_map"]
 
 
-# -------------------------------------------
 # Slice CAM into 3 × 3 spatial zones
-# -------------------------------------------
 def divide_cam_into_zones(cam):
     """
     cam: np.array of shape (H, W) in [0,1]
@@ -52,9 +48,7 @@ def divide_cam_into_zones(cam):
     return zone_intensity
 
 
-# -------------------------------------------
 # Get top anatomical regions from CAM
-# -------------------------------------------
 def extract_notable_regions(cam, top_n=2):
     """
     cam: numpy array (HxW)

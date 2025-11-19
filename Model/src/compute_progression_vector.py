@@ -9,9 +9,7 @@ from torchvision import transforms
 from src.autoencoder import Autoencoder
 from src.models import get_device
 
-# ---------------------------
 # Load single MRI as grayscale tensor
-# ---------------------------
 def load_mri(img_path, img_size=128):
     transform = transforms.Compose([
         transforms.Grayscale(),
@@ -22,9 +20,7 @@ def load_mri(img_path, img_size=128):
     return transform(img).unsqueeze(0)  # (1,1,H,W)
 
 
-# ---------------------------
 # Compute progression vector
-# ---------------------------
 def compute_progression_vector(
     healthy_dir="data/raw/train/No Impairment",
     demented_dir="data/raw/train/Moderate Impairment",

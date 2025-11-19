@@ -5,9 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-# ---------------------------------------
-# ENCODER
-# ---------------------------------------
+# Encoder
 class Encoder(nn.Module):
     def __init__(self, latent_dim=64):
         super().__init__()
@@ -31,9 +29,7 @@ class Encoder(nn.Module):
         return z
 
 
-# ---------------------------------------
-# DECODER
-# ---------------------------------------
+# Decoder
 class Decoder(nn.Module):
     def __init__(self, latent_dim=64):
         super().__init__()
@@ -57,9 +53,7 @@ class Decoder(nn.Module):
         return x
 
 
-# ---------------------------------------
-# AUTOENCODER WRAPPER
-# ---------------------------------------
+# Autoencoder wrapper
 class Autoencoder(nn.Module):
     def __init__(self, latent_dim=64):
         super().__init__()

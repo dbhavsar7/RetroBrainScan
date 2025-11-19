@@ -1,4 +1,5 @@
 # RetroBrainScan - Project Index
+2nd Best Hack Award Winner - HACKRPI 2025
 
 ## Overview
 RetroBrainScan is a full-stack medical imaging application for analyzing brain MRI scans to predict Alzheimer's disease progression. The system uses deep learning models to classify current brain state and generate future MRI predictions with risk assessment.
@@ -554,7 +555,6 @@ Open browser to the frontend URL (typically http://localhost:5173/)
 
 ---
 
-*Last indexed: 2025*
 *Project: RetroBrainScan - HACKRPI 2025*
 *Full-stack medical imaging application for Alzheimer's disease prediction*
 
